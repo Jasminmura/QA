@@ -1,0 +1,849 @@
+{
+	"info": {
+		"_postman_id": "4cf09620-4842-4f7f-80d6-a872c85bc4f1",
+		"name": "QA April 2025",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46130357",
+		"_collection_link": "https://jasmen-4157632.postman.co/workspace/Jasmen's-Workspace~2d5c6ec2-bbc0-4bc4-8724-5894ac04787d/collection/46130357-4cf09620-4842-4f7f-80d6-a872c85bc4f1?action=share&source=collection_link&creator=46130357"
+	},
+	"item": [
+		{
+			"name": "Get All Bookings",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Parse the response\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"// Extract all booking IDs from the response\r",
+							"const bookingIds = response.map(booking => booking.bookingid);\r",
+							"\r",
+							"// Get the user booking ID from environment\r",
+							"const userBookingId = parseInt(pm.environment.get(\"ID\"));\r",
+							"console.log(\"the booking id value\",userBookingId);\r",
+							"// Check that the booking ID exists in the list\r",
+							"pm.test(\"User's booking ID is found in the list\", function () {\r",
+							"    pm.expect(bookingIds).to.include(userBookingId);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/booking",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Booking By ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Save first booking ID to environment\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"\r",
+							"    // Make sure the response is an array and not empty\r",
+							"    if (Array.isArray(jsonData) && jsonData.length > 0) {\r",
+							"        const bookingId = jsonData[0].bookingid;\r",
+							"        console.log(\"Setting booking ID:\", bookingId);  // ✅ For debugging\r",
+							"        pm.environment.set(\"ID\", bookingId);\r",
+							"    } else {\r",
+							"        console.log(\"Response is empty or not an array\");\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/booking",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"booking"
+					],
+					"query": [
+						{
+							"key": "ID",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Booking By Name",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response should be a JSON array\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each item should contain bookingid as number\", function () {\r",
+							"    let jsonData = pm.response.json();\r",
+							"\r",
+							"    jsonData.forEach((item) => {\r",
+							"        pm.expect(item).to.have.property(\"bookingid\");\r",
+							"        pm.expect(item.bookingid).to.be.a(\"number\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"// Optional: Set first bookingid as environment variable\r",
+							"if (pm.response.json().length > 0) {\r",
+							"    pm.environment.set(\"ID\", pm.response.json()[0].bookingid);\r",
+							"} else {\r",
+							"    console.log(\"No booking found for given name.\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/booking?firstname=Jim&lastname=Brown",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"booking"
+					],
+					"query": [
+						{
+							"key": "firstname",
+							"value": "Jim"
+						},
+						{
+							"key": "lastname",
+							"value": "Brown"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Filter By Checkin checkout Date",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 1. Check status is 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// 2. Only continue if response is JSON\r",
+							"if (pm.response.headers.get('Content-Type')?.includes('application/json')) {\r",
+							"    const response = pm.response.json();\r",
+							"\r",
+							"    // 3. Check response is an array\r",
+							"    pm.test(\"Response is an array\", function () {\r",
+							"        pm.expect(response).to.be.an('array');\r",
+							"    });\r",
+							"\r",
+							"    // 4. Loop through each booking object\r",
+							"    response.forEach((booking, index) => {\r",
+							"        pm.test(`Booking ${index + 1} contains bookingid`, function () {\r",
+							"            pm.expect(booking).to.have.property('bookingid');\r",
+							"        });\r",
+							"\r",
+							"        pm.test(`Booking ${index + 1} bookingid is a number`, function () {\r",
+							"            pm.expect(booking.bookingid).to.be.a('number');\r",
+							"        });\r",
+							"    });\r",
+							"\r",
+							"    // 5. Save first ID\r",
+							"    if (response.length > 0) {\r",
+							"        pm.environment.set(\"ID\", response[0].bookingid);\r",
+							"    }\r",
+							"} else {\r",
+							"    console.warn(\"Response is not JSON. Skipping tests.\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking?checkin=2022-01-01&checkout=2022-01-10",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking"
+					],
+					"query": [
+						{
+							"key": "checkin",
+							"value": "2022-01-01"
+						},
+						{
+							"key": "checkout",
+							"value": "2022-01-10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateBooking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse request body\r",
+							"const requestBody = pm.request.body.raw;\r",
+							"let parsedBody;\r",
+							"\r",
+							"try {\r",
+							"    parsedBody = JSON.parse(requestBody);\r",
+							"} catch (e) {\r",
+							"    console.error(\"Failed to parse request body:\", e);\r",
+							"}\r",
+							"\r",
+							"// ✅ Test 1: Check request body has required fields\r",
+							"pm.test('✅ Request body contains all required fields', () => {\r",
+							"    pm.expect(parsedBody).to.be.an('object');\r",
+							"    pm.expect(parsedBody).to.have.all.keys('firstname', 'lastname', 'totalprice', 'depositpaid', 'bookingdates', 'additionalneeds');\r",
+							"    pm.expect(parsedBody.bookingdates).to.have.all.keys('checkin', 'checkout');\r",
+							"});\r",
+							"\r",
+							"// ✅ Parse response (only once!)\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"// ✅ Test 2: Booking created successfully\r",
+							"pm.test('✅ Booking created successfully', () => {\r",
+							"    pm.expect(response).to.have.property('bookingid');\r",
+							"    pm.expect(response.booking).to.have.all.keys('firstname', 'lastname', 'totalprice', 'depositpaid', 'bookingdates', 'additionalneeds');\r",
+							"    \r",
+							"    // Save booking ID for later use\r",
+							"    pm.environment.set(\"userBookingId\", response.bookingid);\r",
+							"});\r",
+							"\r",
+							"// Logged-in user (mocked)\r",
+							"const loggedInUser = {\r",
+							"    firstname: \"Jasmen\",\r",
+							"    lastname: \"Mura\"\r",
+							"};\r",
+							"\r",
+							"// ✅ Test 3: User who created the booking is the logged-in user\r",
+							"pm.test('✅ Booking was made by the logged-in user', () => {\r",
+							"    pm.expect(response.booking.firstname).to.equal(loggedInUser.firstname);\r",
+							"    pm.expect(response.booking.lastname).to.equal(loggedInUser.lastname);\r",
+							"});\r",
+							"\r",
+							"// ✅ Save environment variables for later use\r",
+							"pm.environment.set(\"ID\", response.bookingid);\r",
+							"pm.environment.set(\"firstname\", response.booking.firstname);\r",
+							"pm.environment.set(\"lastname\", response.booking.lastname);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\" : \"Jasmen\",\r\n    \"lastname\" : \"Mura\",\r\n    \"totalprice\" : 200,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2019-01-01\",\r\n        \"checkout\" : \"2020-01-01\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "JSON",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "<booking>\r\n  <firstname>Jim</firstname>\r\n  <lastname>Brown</lastname>\r\n  <totalprice>111</totalprice>\r\n  <depositpaid>true</depositpaid>\r\n  <bookingdates>\r\n    <checkin>2018-01-01</checkin>\r\n    <checkout>2019-01-01</checkout>\r\n  </bookingdates>\r\n  <additionalneeds>Breakfast</additionalneeds>\r\n</booking>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				},
+				{
+					"name": "URL",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "<booking>\r\n  <firstname>Jim</firstname>\r\n  <lastname>Brown</lastname>\r\n  <totalprice>111</totalprice>\r\n  <depositpaid>true</depositpaid>\r\n  <bookingdates>\r\n    <checkin>2018-01-01</checkin>\r\n    <checkout>2019-01-01</checkout>\r\n  </bookingdates>\r\n  <additionalneeds>Breakfast</additionalneeds>\r\n</booking>",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "UpdateBooking",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token=85b0b15657acac0",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\" : \"Jasmen\",\r\n    \"lastname\" : \"Mura\",\r\n    \"totalprice\" : 200,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2019-01-01\",\r\n        \"checkout\" : \"2020-01-01\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/4587",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"4587"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateTokin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"TOKEN\", pm.response.json().token);\r",
+							"pm.test(\"User is logged in\", () => {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.token).to.exist;\r",
+							"    pm.expect(response.token).to.be.a('string');\r",
+							"    pm.expect(response.token).to.have.length.greaterThan(0);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\" : \"admin\",\r\n    \"password\" : \"password123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/auth",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PartialUpdateBooking",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token=edd2552561941e2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\" : \"James\",\r\n    \"lastname\" : \"Brown\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/3147",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"3147"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "PartialUpdateBooking",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token=edd2552561941e2",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"James\",\r\n    \"lastname\" : \"Brown\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking/3147",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking",
+								"3147"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				},
+				{
+					"name": "PartialUpdateBooking",
+					"originalRequest": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "token=edd2552561941e2",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstname\" : \"James\",\r\n    \"lastname\" : \"Brown\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restful-booker.herokuapp.com/booking/3147",
+							"protocol": "https",
+							"host": [
+								"restful-booker",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"booking",
+								"3147"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				}
+			]
+		},
+		{
+			"name": "DeleteBooking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define the booking ID that was deleted\r",
+							"const deletedBookingId = 2435;\r",
+							"\r",
+							"// Send a GET request to retrieve all bookings\r",
+							"pm.sendRequest({\r",
+							"    url: 'https://restful-booker.herokuapp.com/booking',\r",
+							"    method: 'GET'\r",
+							"}, function (err, res) {\r",
+							"    // Validate that the booking ID does not appear in the response\r",
+							"    pm.test('Booking ID should not be present in the list of all bookings', function () {\r",
+							"        const bookings = res.json();\r",
+							"        const bookingIds = bookings.map(booking => booking.bookingid);\r",
+							"        pm.expect(bookingIds).to.not.include(deletedBookingId);\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "token={{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/{{ID}}",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						"{{ID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+					},
+					{
+						"key": "Accept-Language",
+						"value": "en-US,en;q=0.9,ar-AE;q=0.8,ar;q=0.7,he-IL;q=0.6,he;q=0.5"
+					},
+					{
+						"key": "Connection",
+						"value": "keep-alive"
+					},
+					{
+						"key": "Referer",
+						"value": "https://opensource-demo.orangehrmlive.com/web/index.php/admin/viewSystemUsers"
+					},
+					{
+						"key": "Sec-Fetch-Dest",
+						"value": "document"
+					},
+					{
+						"key": "Sec-Fetch-Mode",
+						"value": "navigate"
+					},
+					{
+						"key": "Sec-Fetch-Site",
+						"value": "same-origin"
+					},
+					{
+						"key": "Sec-Fetch-User",
+						"value": "?1"
+					},
+					{
+						"key": "Upgrade-Insecure-Requests",
+						"value": "1"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?0"
+					},
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Windows\""
+					},
+					{
+						"key": "Cookie",
+						"value": "orangehrm=0l3hg179s5de4got1b4b1h9ei0"
+					}
+				],
+				"url": {
+					"raw": "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index",
+					"protocol": "https",
+					"host": [
+						"opensource-demo",
+						"orangehrmlive",
+						"com"
+					],
+					"path": [
+						"web",
+						"index.php",
+						"dashboard",
+						"index"
+					]
+				},
+				"description": "Generated from cURL: curl 'https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index' \\\r\n  -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \\\r\n  -H 'Accept-Language: en-US,en;q=0.9,ar-AE;q=0.8,ar;q=0.7,he-IL;q=0.6,he;q=0.5' \\\r\n  -H 'Connection: keep-alive' \\\r\n  -b 'orangehrm=0l3hg179s5de4got1b4b1h9ei0' \\\r\n  -H 'Referer: https://opensource-demo.orangehrmlive.com/web/index.php/admin/viewSystemUsers' \\\r\n  -H 'Sec-Fetch-Dest: document' \\\r\n  -H 'Sec-Fetch-Mode: navigate' \\\r\n  -H 'Sec-Fetch-Site: same-origin' \\\r\n  -H 'Sec-Fetch-User: ?1' \\\r\n  -H 'Upgrade-Insecure-Requests: 1' \\\r\n  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36' \\\r\n  -H 'sec-ch-ua: \"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"' \\\r\n  -H 'sec-ch-ua-mobile: ?0' \\\r\n  -H 'sec-ch-ua-platform: \"Windows\"'"
+			},
+			"response": []
+		},
+		{
+			"name": "https://opensource-demo.orangehrmlive.com/web/index.php/admin/viewAdminModule",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+					},
+					{
+						"key": "Accept-Language",
+						"value": "en-US,en;q=0.9,ar-AE;q=0.8,ar;q=0.7,he-IL;q=0.6,he;q=0.5"
+					},
+					{
+						"key": "Connection",
+						"value": "keep-alive"
+					},
+					{
+						"key": "Referer",
+						"value": "https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index"
+					},
+					{
+						"key": "Sec-Fetch-Dest",
+						"value": "document"
+					},
+					{
+						"key": "Sec-Fetch-Mode",
+						"value": "navigate"
+					},
+					{
+						"key": "Sec-Fetch-Site",
+						"value": "same-origin"
+					},
+					{
+						"key": "Sec-Fetch-User",
+						"value": "?1"
+					},
+					{
+						"key": "Upgrade-Insecure-Requests",
+						"value": "1"
+					},
+					{
+						"key": "User-Agent",
+						"value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+					},
+					{
+						"key": "sec-ch-ua",
+						"value": "\"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\""
+					},
+					{
+						"key": "sec-ch-ua-mobile",
+						"value": "?0"
+					},
+					{
+						"key": "sec-ch-ua-platform",
+						"value": "\"Windows\""
+					},
+					{
+						"key": "Cookie",
+						"value": "orangehrm=0l3hg179s5de4got1b4b1h9ei0"
+					}
+				],
+				"url": {
+					"raw": "https://opensource-demo.orangehrmlive.com/web/index.php/admin/viewAdminModule",
+					"protocol": "https",
+					"host": [
+						"opensource-demo",
+						"orangehrmlive",
+						"com"
+					],
+					"path": [
+						"web",
+						"index.php",
+						"admin",
+						"viewAdminModule"
+					]
+				},
+				"description": "Generated from cURL: curl 'https://opensource-demo.orangehrmlive.com/web/index.php/admin/viewAdminModule' \\\r\n  -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \\\r\n  -H 'Accept-Language: en-US,en;q=0.9,ar-AE;q=0.8,ar;q=0.7,he-IL;q=0.6,he;q=0.5' \\\r\n  -H 'Connection: keep-alive' \\\r\n  -b 'orangehrm=0l3hg179s5de4got1b4b1h9ei0' \\\r\n  -H 'Referer: https://opensource-demo.orangehrmlive.com/web/index.php/dashboard/index' \\\r\n  -H 'Sec-Fetch-Dest: document' \\\r\n  -H 'Sec-Fetch-Mode: navigate' \\\r\n  -H 'Sec-Fetch-Site: same-origin' \\\r\n  -H 'Sec-Fetch-User: ?1' \\\r\n  -H 'Upgrade-Insecure-Requests: 1' \\\r\n  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36' \\\r\n  -H 'sec-ch-ua: \"Google Chrome\";v=\"137\", \"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"' \\\r\n  -H 'sec-ch-ua-mobile: ?0' \\\r\n  -H 'sec-ch-ua-platform: \"Windows\"'"
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

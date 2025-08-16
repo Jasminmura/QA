@@ -1,0 +1,368 @@
+{
+	"info": {
+		"_postman_id": "adb85a48-91a6-479f-8c75-04e0d5d692f0",
+		"name": "collections pet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46130506"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "New Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains 'message'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"message\");\r",
+									"});\r",
+									"\r",
+									"// Save username for later use\r",
+									"pm.environment.set(\"username\", \"jason\");\r",
+									"\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n  {\r\n    \"id\": 2522,\r\n    \"username\": \"smith\",\r\n    \"firstName\": \"john \",\r\n    \"lastName\": \"smith\",\r\n    \"email\": \"string\",\r\n    \"password\": \"string\",\r\n    \"phone\": \"string\",\r\n    \"userStatus\":15\r\n  }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://petstore.swagger.io/v2/user/createWithList",
+							"protocol": "https",
+							"host": [
+								"petstore",
+								"swagger",
+								"io"
+							],
+							"path": [
+								"v2",
+								"user",
+								"createWithList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search user by name",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://petstore.swagger.io/v2/user/jason",
+							"protocol": "https",
+							"host": [
+								"petstore",
+								"swagger",
+								"io"
+							],
+							"path": [
+								"v2",
+								"user",
+								"jason"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Update confirmation received\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"message\");\r",
+									"});\r",
+									"\r",
+									"// Update the username variable to reflect the new name (if changed)\r",
+									"pm.environment.set(\"username\", \"dooge\");\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "qwerty123456",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "api_key",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "api_key",
+								"value": "qwerty123456",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"username\": \"dooge\",\r\n  \"firstName\": \"john\",\r\n  \"lastName\": \"smith\",\r\n  \"email\": \"string\",\r\n  \"password\": \"string\",\r\n  \"phone\": \"050555111201\",\r\n  \"userStatus\":15\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://petstore.swagger.io/v2/user/smith",
+							"protocol": "https",
+							"host": [
+								"petstore",
+								"swagger",
+								"io"
+							],
+							"path": [
+								"v2",
+								"user",
+								"smith"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Deletion confirmation received\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"message\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://petstore.swagger.io/v2/user/dooge",
+							"protocol": "https",
+							"host": [
+								"petstore",
+								"swagger",
+								"io"
+							],
+							"path": [
+								"v2",
+								"user",
+								"dooge"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Login message includes 'logged in'\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.include(\"logged in\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://petstore.swagger.io/v2/user/login?username=black&password=123456789",
+							"protocol": "https",
+							"host": [
+								"petstore",
+								"swagger",
+								"io"
+							],
+							"path": [
+								"v2",
+								"user",
+								"login"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "black"
+								},
+								{
+									"key": "password",
+									"value": "123456789"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "log out user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Logout message is OK\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.include(\"ok\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://petstore.swagger.io/v2/user/logout?username=black&password=12347",
+							"protocol": "https",
+							"host": [
+								"petstore",
+								"swagger",
+								"io"
+							],
+							"path": [
+								"v2",
+								"user",
+								"logout"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "black"
+								},
+								{
+									"key": "password",
+									"value": "12347"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

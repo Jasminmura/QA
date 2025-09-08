@@ -1,0 +1,680 @@
+{
+	"info": {
+		"_postman_id": "30e9817c-17b0-4be7-bd20-fc93cb9550aa",
+		"name": "final project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46130506"
+	},
+	"item": [
+		{
+			"name": "GET",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CREATE NEW USER",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"\r",
+							"// Test for successful account creation\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Account creation success\", function () {\r",
+							"    pm.expect(response.success).to.be.true;\r",
+							"    pm.expect(response.message).to.equal(\"User account created successfully\");\r",
+							"});\r",
+							"\r",
+							"// Validate the created user data\r",
+							"pm.test(\"User data is present and valid\", function () {\r",
+							"    const userData = response.data;\r",
+							"    pm.expect(userData).to.exist;\r",
+							"    pm.expect(userData).to.have.property('id').that.is.a('string');\r",
+							"    pm.expect(userData).to.have.property('name').that.is.a('string');\r",
+							"    pm.expect(userData).to.have.property('email').that.is.a('string');\r",
+							"});\r",
+							"\r",
+							"// Optionally, you can follow up with a request to get the list of users\r",
+							"pm.sendRequest({\r",
+							"    url: 'https://practice.expandtesting.com/notes/api/users',\r",
+							"    method: 'GET',\r",
+							"    header: {\r",
+							"        'Content-Type': 'application/json'\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error(err);\r",
+							"        return;\r",
+							"    }\r",
+							"\r",
+							"    const usersResponse = res.json();\r",
+							"    pm.test(\"User appears in the list of users\", function () {\r",
+							"        const userExists = usersResponse.data.some(user => user.id === userData.id);\r",
+							"        pm.expect(userExists).to.be.true;\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "seham105",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "12345678978910",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "a7la.lena211@Gmail.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api/users/register",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login + token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test script to verify login and save the token in an Environment Variable\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"// Check if email has changed\r",
+							"pm.test(\"Email matches the expected value\", function () {\r",
+							"    pm.expect(jsonData.data.email).to.equal(\"a7la.lena2@gmail.com\");\r",
+							"});\r",
+							"\r",
+							"if (jsonData.data.token) {\r",
+							"    // Save the token in an Environment Variable called \"authToken\"\r",
+							"    pm.environment.set(\"authToken\", jsonData.data.token);\r",
+							"    console.log(\"Token successfully saved:\", jsonData.data.token);\r",
+							"} else {\r",
+							"    console.log(\"Token not found in the response.\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"a7la.lena211@Gmail.com\",\r\n  \"password\": \"12345678978910\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api/users/login",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"// Replace with the actual password for seham105\r",
+							"const email = 'a7la.lena211@gmail.com';\r",
+							"const password = '12345678978910';\r",
+							"\r",
+							"async function authenticateUser() {\r",
+							"  try {\r",
+							"    // Step 1: Login\r",
+							"    const loginResponse = await axios.post('https://practice.expandtesting.com/notes/api/users/login', {\r",
+							"      email,\r",
+							"      password\r",
+							"    });\r",
+							"\r",
+							"    // Step 2: Extract token\r",
+							"    const token = loginResponse.data.data.token;\r",
+							"    console.log('✅ Token saved:', token);\r",
+							"\r",
+							"    // You can now use this token in other requests\r",
+							"    // Example: Get profile\r",
+							"    const profileResponse = await axios.get('https://practice.expandtesting.com/notes/api/users/profile', {\r",
+							"      headers: {\r",
+							"        'x-auth-token': token\r",
+							"      }\r",
+							"    });\r",
+							"\r",
+							"    console.log('👤 Profile:', profileResponse.data.data);\r",
+							"  } catch (error) {\r",
+							"    console.error('❌ Error:', error.response?.data || error.message);\r",
+							"  }\r",
+							"}\r",
+							"\r",
+							"authenticateUser();\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "dabd72b36caf4ebea12591cc868d231c0eecbfc738a545fb9e47b12747d330d1",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-auth-token",
+						"value": "dabd72b36caf4ebea12591cc868d231c0eecbfc738a545fb9e47b12747d330d1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api/users/profile?name=seham105&x-auth-token=4cee8486674e40df8d4fb2787bc2c2c015ce42ec4e88492eb34332145e2592a3",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api",
+						"users",
+						"profile"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "seham105"
+						},
+						{
+							"key": "x-auth-token",
+							"value": "4cee8486674e40df8d4fb2787bc2c2c015ce42ec4e88492eb34332145e2592a3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change profile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response once\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Debug: print the full JSON to Postman Console\r",
+							"console.log(jsonData);\r",
+							"\r",
+							"// Example assertion (adjust the path according to your JSON)\r",
+							"pm.test(\"Verify email was updated successfully\", function () {\r",
+							"    pm.expect(jsonData.email).to.eql(\"a7la.lena2@gmail.com\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "token",
+						"value": "dabd72b36caf4ebea12591cc868d231c0eecbfc738a545fb9e47b12747d330d1",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-auth-token",
+						"value": "4cee8486674e40df8d4fb2787bc2c2c015ce42ec4e88492eb34332145e2592a3",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "alias1051",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "a7la.lena211@gmail.com",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api/users/profile",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api",
+						"users",
+						"profile"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "alias105",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "change password",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Verify password change was successful\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(200); // או 204 לפי ה-API\r",
+							"    pm.expect(jsonData.success).to.eql(true);\r",
+							"    pm.expect(jsonData.message).to.include(\"Password updated\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					},
+					{
+						"key": "x-auth-token",
+						"value": "4cee8486674e40df8d4fb2787bc2c2c015ce42ec4e88492eb34332145e2592a3",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "currentPassword=12345678978910&newPassword=123456789789100",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api/users/change-password",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api",
+						"users",
+						"change-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login + token Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test script to verify login and save the token in an Environment Variable\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"// Check if email has changed\r",
+							"pm.test(\"Email matches the expected value\", function () {\r",
+							"    pm.expect(jsonData.data.email).to.equal(\"a7la.lena2@gmail.com\");\r",
+							"});\r",
+							"\r",
+							"if (jsonData.data.token) {\r",
+							"    // Save the token in an Environment Variable called \"authToken\"\r",
+							"    pm.environment.set(\"authToken\", jsonData.data.token);\r",
+							"    console.log(\"Token successfully saved:\", jsonData.data.token);\r",
+							"} else {\r",
+							"    console.log(\"Token not found in the response.\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"a7la.lena2@Gmail.com\",\r\n  \"password\": \"123456789789100\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api/users/login",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout _user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Logout successful\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(200);\r",
+							"    pm.expect(jsonData.success).to.eql(true);\r",
+							"    pm.expect(jsonData.message).to.include(\"logged out\");\r",
+							"});\r",
+							"\r",
+							"// אופציונלי: מחיקת ה-Token מה-Environment\r",
+							"pm.environment.unset(\"authToken\");\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "x-auth-token",
+						"value": "4cee8486674e40df8d4fb2787bc2c2c015ce42ec4e88492eb34332145e2592a3",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api/users/logout",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api",
+						"users",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify deletion fails for non-existing user\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(401);\r",
+							"    pm.expect(jsonData.success).to.eql(false);\r",
+							"    pm.expect(jsonData.message).to.include(\"not found\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-auth-token",
+						"value": "4cee8486674e40df8d4fb2787bc2c2c015ce42ec4e88492eb34332145e2592a3",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://practice.expandtesting.com/notes/api/users/delete-account",
+					"protocol": "https",
+					"host": [
+						"practice",
+						"expandtesting",
+						"com"
+					],
+					"path": [
+						"notes",
+						"api",
+						"users",
+						"delete-account"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
